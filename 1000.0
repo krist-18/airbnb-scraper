@@ -1,0 +1,13 @@
+self._max = max(self._min, max_delay_ms / 1000.0)
+
+    @asynccontextmanager
+    async def slot(self) -> AsyncIterator[None]:
+        await self._sem.acquire()
+        try:
+            # jitter before work starts (polite start)
+            await asyncio.sleep(random.uniform(self._min, self._max))
+            yield
+        finally:
+            # jitter after work ends (polite spacing)
+            await asyncio.sleep(random.uniform(self._min, self._max))
+            self._sem.release()
