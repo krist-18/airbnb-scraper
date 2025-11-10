@@ -1,0 +1,4 @@
+txtbeautifulsoup4==4.12.3
+lxml==5.3.0
+pydantic==2.8.2
+pytest==8.2.1
