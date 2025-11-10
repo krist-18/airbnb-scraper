@@ -1,0 +1,6 @@
+{
+  "concurrency": 2,
+  "min_delay_ms": 300,
+  "max_delay_ms": 900,
+  "currency": "USD"
+}
