@@ -1,0 +1,51 @@
+[
+  {
+    "url": "https://www.airbnb.com/rooms/53169062",
+    "airbnbId": 53169062,
+    "name": "PLAYA AMANECER",
+    "numberOfGuests": 4,
+    "address": "Benajarafe, Andalucía, Spain",
+    "roomType": "Entire guesthouse",
+    "location": {
+      "lat": 36.716,
+      "lng": -4.203
+    },
+    "reviews": [
+      {
+        "author": {
+          "firstName": "Chris",
+          "id": "159332062"
+        },
+        "comments": "Hidden gem beautiful accommodation...",
+        "createdAt": "2022-07-16T11:48:15Z",
+        "rating": 5.0
+      }
+    ],
+    "pricing": {
+      "rate": {
+        "amount": 16216,
+        "is_micros_accuracy": false
+      }
+    },
+    "photos": [
+      "https://a0.muscache.com/im/pictures/83f34263-ecc8-4495-a290-acd8418edf79.jpg?aki_policy=large"
+    ],
+    "amenities": [
+      "Wifi",
+      "Kitchen",
+      "Dedicated workspace",
+      "Air conditioning"
+    ],
+    "city": "malaga",
+    "country": "spain",
+    "bedrooms": "2",
+    "currency": "USD",
+    "meta": {
+      "generatedAt": "2025-01-01T00:00:00Z",
+      "searchUrls": [
+        "https://www.airbnb.com/s/Malaga%2C+Spain/homes?query=Malaga%2C+Spain&adults=2&display_currency=USD&page=1#bb=deadbeef"
+      ],
+      "source": "local-fixture"
+    }
+  }
+]
