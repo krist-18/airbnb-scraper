@@ -1,0 +1,105 @@
+thon src/runner.py --html tests/fixtures/listing_detail.html --location "Malaga, Spain"
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import os
+import sys
+from datetime import datetime
+from typing import Any, Dict, List
+
+# Ensure local imports work without packages
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+if CURRENT_DIR not in sys.path:
+    sys.path.insert(0, CURRENT_DIR)
+
+from listing_parser import parse_listing_detail_html  # type: ignore
+from search import build_search_urls  # type: ignore
+
+def load_settings_example() -> Dict[str, Any]:
+    cfg_path = os.path.join(CURRENT_DIR, "config", "settings.example.json")
+    try:
+        with open(cfg_path, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return {
+            "concurrency": 2,
+            "min_delay_ms": 300,
+            "max_delay_ms": 900,
+            "currency": "USD",
+        }
+
+def read_text(path: str) -> str:
+    with open(path, "r", encoding="utf-8") as f:
+        return f.read()
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description="Airbnb Scraper (local HTML parser)")
+    parser.add_argument("--input", default="data/inputs.sample.json", help="Path to inputs JSON")
+    parser.add_argument("--output", default="data/sample_output.json", help="Where to write JSON output")
+    parser.add_argument("--html", default="tests/fixtures/listing_detail.html", help="Path to listing detail HTML")
+    parser.add_argument("--location", default=None, help="Location name for search URL construction")
+    parser.add_argument("--pages", type=int, default=1, help="Number of search pages to simulate")
+    args = parser.parse_args()
+
+    # Inputs
+    if os.path.exists(args.input):
+        with open(args.input, "r", encoding="utf-8") as f:
+            inputs = json.load(f)
+    else:
+        inputs = {
+            "location": args.location or "Malaga, Spain",
+            "adults": 2,
+            "checkin": None,
+            "checkout": None,
+            "min_price": None,
+            "max_price": None,
+            "currency": "USD",
+        }
+
+    settings = load_settings_example()
+
+    # Build (simulated) search URLs - purely deterministic, no network
+    search_urls = build_search_urls(
+        location=inputs.get("location") or args.location or "Malaga, Spain",
+        checkin=inputs.get("checkin"),
+        checkout=inputs.get("checkout"),
+        adults=int(inputs.get("adults") or 2),
+        min_price=inputs.get("min_price"),
+        max_price=inputs.get("max_price"),
+        page_count=int(args.pages),
+        currency=inputs.get("currency") or settings.get("currency", "USD"),
+    )
+
+    # Parse a local HTML file that represents a listing detail page
+    html_path = args.html
+    if not os.path.exists(html_path):
+        raise SystemExit(f"HTML file not found: {html_path}")
+
+    html = read_text(html_path)
+    listing = parse_listing_detail_html(html)
+
+    # Enrich with run metadata and search context
+    listing.meta = {
+        "generatedAt": datetime.utcnow().isoformat() + "Z",
+        "searchUrls": search_urls,
+        "source": "local-fixture",
+    }
+
+    data: List[Dict[str, Any]] = [listing.model_dump(by_alias=True, exclude_none=True)]
+
+    # Ensure output directory exists
+    out_dir = os.path.dirname(os.path.abspath(args.output))
+    if out_dir and not os.path.exists(out_dir):
+        os.makedirs(out_dir, exist_ok=True)
+
+    with open(args.output, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=2, ensure_ascii=False)
+
+    # Also print to stdout for convenience
+    print(json.dumps(data, indent=2, ensure_ascii=False))
+
+if __name__ == "__main__":
+    main()
