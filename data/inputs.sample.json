@@ -1,0 +1,9 @@
+{
+  "location": "Malaga, Spain",
+  "adults": 2,
+  "checkin": "2025-12-20",
+  "checkout": "2025-12-27",
+  "min_price": 80,
+  "max_price": 220,
+  "currency": "EUR"
+}
